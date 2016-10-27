@@ -7,6 +7,9 @@ class Mario:
     Jump_None = 0
     Jump_Up = 1
     Jump_Down = 2
+    Left = 1
+    Right = 0
+
     def __init__(self):
         if Mario.image_Mario == None :
             Mario.image_Mario = load_image('Mario_Null.png')
@@ -23,14 +26,14 @@ class Mario:
         self.Jump = Mario.Jump_None
         self.Jump_State = 0
         self.Down = 0
+        self.Where = Mario.Right
 
     def draw(self):
-        self.image_Mario.clip_draw(52 * self.State , 0 , 52 , 50 , self.X ,self.Y)
+        self.image_Mario.clip_draw(52 * self.State , 50 * self.Where , 52  , 50 , self.X ,self.Y)
         self.image_Number.clip_draw(20 * (self.Num - 1) , 0 , 20 , 18 , self.X , self.Y + 34)
     def update(self):
-        pass
-     ## if self.Move :
-     ##     self.X += self.Speed
+        if self.Move :
+            self.X += self.Speed
      ##     if s##elf.X > 936 :
      ##         self.X = 936
      ##     elif self.X < 26 :
