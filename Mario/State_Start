@@ -1,7 +1,15 @@
 from pico2d import *
+
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
+
+mario       = None
+Marios      = None
+press_start = None
+back_ground = None
+exits       = None
+logo        = None
 
 class Press_Start:
     def __init__(self):
@@ -37,157 +45,62 @@ class Logo:
 def UPDATE():
     global press_start , Marios
     press_start.update()
-    MOVE()
     JUMP()
+    for Mario in Marios :
+        Mario.update()
+        Class_Mario.Block(Mario, Marios)
+
 
 
 def DRAW():
-    global exits , press_start , back_ground , marios , logo
+    global exits , press_start , back_ground , Marios , logo
     back_ground.draw()
     press_start.draw()
     exits.draw()
-    for mario in Marios:
-        mario.draw()
+    for Mario in Marios:
+        Mario.draw()
     logo.draw()
     update_canvas()
-
-def Define_Mario():
-    global Marios
-    i = 1
-    for mario in Marios:
-        mario.Num = i
-        mario.X = 100 + 50 * mario.Num
-        i += 1
-
-
-def KEYPAD(i):
-    global Marios
-    for mario in Marios :
-        if mario.Num == i :
-            if mario.Select == False:
-                mario.Select = True
-                mario.image_Mario = load_image('Mario.png')
-
-            elif mario.Select == True:
-                mario.image_Mario = load_image('Mario_Null.png')
-                mario.Select = False
-                mario.Speed = 0
-                mario.State = 0
-                mario.Where = mario.Right
-                mario.Move = False
-
-
-def Block(MARIO):
-    global Marios
-    for mario in Marios:
-        if MARIO.Num != mario.Num :
-
-            if MARIO.X + 26 > mario.X - 26 and MARIO.X + 26 < mario.X + 26 :
-                if MARIO.Y == mario.Y :
-                    MARIO.X = mario.X - 52
-
-                elif MARIO.Y - 25 < mario.Y + 25 and MARIO.Y -25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Down:
-                    MARIO.Y = mario.Y + 50
-                    MARIO.Jump = MARIO.Jump_None
-                    MARIO.Jump_State = 0
-                    if MARIO.Move == True :
-                        MARIO.State = 1
-                    else:
-                        MARIO.State = 0
-
-                elif MARIO.Y + 25 < mario.Y + 25 and MARIO.Y + 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Up :
-                    MARIO.Y = mario.Y - 50
-                    MARIO.Jump = MARIO.Jump_Down
-                    MARIO.Jump_State = 0
-
-            elif MARIO.X - 26 < mario.X + 26 and MARIO.X - 26 > mario.X - 26 :
-                if MARIO.Y == mario.Y:
-                    MARIO.X = mario.X + 52
-
-                elif MARIO.Y - 25 < mario.Y + 25 and MARIO.Y - 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Down:
-                    MARIO.Y = mario.Y + 50
-                    MARIO.Jump = MARIO.Jump_None
-                    MARIO.Jump_State = 0
-                    if MARIO.Move == True :
-                        MARIO.State = 1
-                    else:
-                        MARIO.State = 0
-
-                elif MARIO.Y + 25 < mario.Y + 25 and MARIO.Y + 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Up :
-                    MARIO.Y = mario.Y - 50
-                    MARIO.Jump = MARIO.Jump_Down
-                    if MARIO.Move == True :
-                        MARIO.State = 1
-                    else:
-                        MARIO.State = 0
-
-
-
-
-
-
-def MOVE():
-    global Marios
-    for mario in Marios:
-        if mario.Move :
-            mario.X += mario.Speed
-            if mario.X > 936 :
-                mario.X = 936
-            elif mario.X < 26 :
-                mario.X = 26
-            if mario.Jump == mario.Jump_None:
-                if mario.State == 1 :
-                    mario.State = 2
-                elif mario.State == 2 :
-                    mario.State = 1
-        Block(mario)
 
 def JUMP():
     global Marios
     for mario in Marios:
-        Block(mario)
+        down = 0
+        Jerge_down = False
+        if mario.Y >= 244:
+            for MARIO in Marios:
+                if (mario.X < MARIO.X + 26 and mario.X > MARIO.X - 26) :
+                    if mario.Y - 25 > MARIO.Y + 25:
+                        down += 1
+                    else:
+                        Jerge_down = True
+
+                else :
+                    down += 1
+
+            if (down , mario.Jump) == (5 , mario.Jump_None):
+                mario.Jump = mario.Jump_Down
+                mario.Jump_State = 1
+                mario.State = 3
+
         if mario.Jump == mario.Jump_Up:
             if mario.Jump_State == 0 :
                 mario.Jump = mario.Jump_Down
             mario.Y = mario.Y + mario.Jump_State ** 2
             mario.Jump_State += 1
-            Block(mario)
-
-       ## ##if mario.Y >= 240:
-        ##    mario.Down = 0
-        ##    for MARIO in Marios:
-        ##        if mario.X + 26 < MARIO.X + 26 or mario.X - 26 > MARIO.X - 26 :
-        ##            if mario.Jump == mario.Jump_None :
-        ##                 mario.Down += 1
-        ##        elif mario.X - 26 > MARIO.X - 26 or mario.X - 26 < MARIO.X + 26 :
-        ##            if mario.Jump == mario.Jump_None :
-        ##                 mario.Down += 1
-        ##             #print (mario.Down)
-        ##        if mario.Down == 5:
-        ##            mario.Jump = mario.Jump_Down
-        ##            mario.State = 3
-            Block(mario)
-
-
-
-
 
         if mario.Jump == mario.Jump_Down:
             mario.Y = mario.Y - mario.Jump_State ** 2
             mario.Jump_State += 1
-            Block(mario)
-            if mario.Y < 194 :
-                mario.Y = 194
-                mario.Jump = mario.Jump_None
-                mario.Jump_State = 0
-                if mario.Move == True :
-                    mario.State = 1
-                else :
-                    mario.State = 0
 
-
-
-
+        if mario.Y < 194 :
+            mario.Y = 194
+            mario.Jump = mario.Jump_None
+            mario.Jump_State = 0
+            if mario.Move == True :
+                mario.State = 1
+            else :
+                mario.State = 0
 
 
 def handle_events():
@@ -197,84 +110,31 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_1:
-            KEYPAD(1)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_2:
-            KEYPAD(2)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_3:
-            KEYPAD(3)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_4:
-            KEYPAD(4)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_5:
-            KEYPAD(5)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_KP_6:
-            KEYPAD(6)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_RIGHT:
-            for mario in Marios:
-                if mario.Select :
-                    mario.Speed = 10
-                    mario.Where = mario.Right
-                    if mario.Jump == mario.Jump_None :
-                        mario.State = 1
+        else :
+            for mario in Marios :
+                mario.Handle_Event(event)
 
-                    mario.Move = True
-        elif event.type == SDL_KEYUP and event.key == SDLK_RIGHT:
-            for mario in Marios:
-                if mario.Select:
-                    mario.Speed = 0
-                    if mario.Jump == mario.Jump_None :
-                        mario.State = 0
-                    mario.Move = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
-            for mario in Marios:
-                if mario.Select:
-                    mario.Speed = -10
-                    mario.Where = mario.Left
-                    if mario.Jump == mario.Jump_None :
-                        mario.State = 1
-                    mario.Move = True
-        elif event.type == SDL_KEYUP and event.key == SDLK_LEFT:
+def main() :
 
-            for mario in Marios:
-                if mario.Select:
-                    mario.Speed = 0
-                    if mario.Jump == mario.Jump_None :
-                        mario.State = 0
-                    mario.Move = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_UP:
-            for mario in Marios:
-                if mario.Select :
-                    if mario.Jump == 0:
-                        mario.Jump = mario.Jump_Up
-                        mario.Jump_State = -6
-                        mario.State = 3
+    open_canvas(962,700)
 
 
+    global mario , Marios , press_start , back_ground , exits , logo , running
 
+    running = True
+    Marios = Class_Mario.Create_Marios()
+    exits = Class_Exit.Exit()
+    press_start = Press_Start()
+    back_ground = Class_Back_Ground.Back_Ground()
+    logo = Logo()
 
-open_canvas(962,700)
-running = True
-mario = Class_Mario.Mario()
-exits = Class_Exit.Exit()
-press_start = Press_Start()
-back_ground = Class_Back_Ground.Back_Ground()
+    while(running):
+        handle_events()
+        UPDATE()
+        DRAW()
+        delay(0.02)
 
+    close_canvas()
 
-mario1 = Class_Mario.Mario()
-mario2 = Class_Mario.Mario()
-mario3 = Class_Mario.Mario()
-mario4 = Class_Mario.Mario()
-mario5 = Class_Mario.Mario()
-mario6 = Class_Mario.Mario()
-Marios = [mario1 , mario2 , mario3 , mario4 , mario5 , mario6]
-
-Define_Mario()
-logo = Logo()
-
-while(running):
-    handle_events()
-    UPDATE()
-    DRAW()
-    delay(0.02)
-
-close_canvas()
+if __name__ == '__main__':
+    main()
