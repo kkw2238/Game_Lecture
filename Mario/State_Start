@@ -19,7 +19,7 @@ class Press_Start:
 
     def draw(self):
         if self.Print :
-            self.Press_C.draw(481,300)
+            self.Press_C.draw(480,300)
 
     def update(self) :
         if self.Print == False :
