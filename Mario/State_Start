@@ -19,7 +19,7 @@ class Press_Start:
 
     def draw(self):
         if self.Print :
-            self.Press_C.draw(480,300)
+            self.Press_C.draw(481,300)
 
     def update(self) :
         if self.Print == False :
@@ -110,6 +110,7 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             running = False
+            z
         else :
             for mario in Marios :
                 mario.Handle_Event(event)
