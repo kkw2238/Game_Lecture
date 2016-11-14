@@ -3,6 +3,7 @@ from pico2d import *
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
+import Stage1
 #
 mario       = None
 Marios      = None
@@ -106,14 +107,26 @@ def JUMP():
 def handle_events():
     global running
     global Marios
+    global Key
+
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
             running = False
-            z
+
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_c):
+            exit()
+            Stage1.Create_Stage()
+
         else :
             for mario in Marios :
                 mario.Handle_Event(event)
+
+def exit():
+    global press_start, exits, logo
+    del(press_start)
+    del(logo)
+    del(exits)
 
 def main() :
 
@@ -128,11 +141,11 @@ def main() :
     press_start = Press_Start()
     back_ground = Class_Back_Ground.Back_Ground()
     logo = Logo()
-#
+
     while(running):
-        handle_events()
         UPDATE()
         DRAW()
+        handle_events()
         delay(0.02)
 
     close_canvas()
