@@ -45,11 +45,20 @@ class Logo:
 
 def UPDATE():
     global press_start , Marios
+    Exit_Mario = 0
     press_start.update()
-    JUMP()
+
     for Mario in Marios :
+        JUMP(Mario)
         Mario.update()
         Class_Mario.Block(Mario, Marios)
+        Mario.Key_Collision(exits)
+        if Mario.Exit == True :
+            Exit_Mario += 1
+
+    if Exit_Mario == 6 :
+        exit()
+        Stage1.Create_Stage()
 
 
 
@@ -63,45 +72,48 @@ def DRAW():
     logo.draw()
     update_canvas()
 
-def JUMP():
+def JUMP(Mario):
     global Marios
-    for mario in Marios:
-        down = 0
-        Jerge_down = False
-        if mario.Y >= 244:
-            for MARIO in Marios:
-                if (mario.X < MARIO.X + 26 and mario.X > MARIO.X - 26) :
-                    if mario.Y - 25 > MARIO.Y + 25:
-                        down += 1
-                    else:
-                        Jerge_down = True
 
-                else :
+    down = 0
+    Jerge_down = False
+    if Mario.Y >= 244:
+        for MARIO in Marios:
+            if (Mario.X < MARIO.X + 26 and Mario.X > MARIO.X - 26):
+                if Mario.Y - 26 > MARIO.Y + 26:
                     down += 1
+                if Mario.Y + 26 <= MARIO.Y - 26:
+                    down += 1
+                else:
+                    Jerge_down = True
 
-            if (down , mario.Jump) == (5 , mario.Jump_None):
-                mario.Jump = mario.Jump_Down
-                mario.Jump_State = 1
-                mario.State = 3
+            else:
+                down += 1
 
-        if mario.Jump == mario.Jump_Up:
-            if mario.Jump_State == 0 :
-                mario.Jump = mario.Jump_Down
-            mario.Y = mario.Y + mario.Jump_State ** 2
-            mario.Jump_State += 1
+        if (down, Mario.Jump) == (5, Mario.Jump_None):
+            Mario.Jump = Mario.Jump_Down
+            Mario.Jump_State = 1
+            Mario.State = 3
 
-        if mario.Jump == mario.Jump_Down:
-            mario.Y = mario.Y - mario.Jump_State ** 2
-            mario.Jump_State += 1
+    if Mario.Jump == Mario.Jump_Up:
+        if Mario.Jump_State == 0:
+            Mario.Jump = Mario.Jump_Down
+        Mario.Y = Mario.Y + Mario.Jump_State ** 2
+        Mario.Jump_State += 1
 
-        if mario.Y < 194 :
-            mario.Y = 194
-            mario.Jump = mario.Jump_None
-            mario.Jump_State = 0
-            if mario.Move == True :
-                mario.State = 1
-            else :
-                mario.State = 0
+    if Mario.Jump == Mario.Jump_Down:
+        Mario.Y = Mario.Y - Mario.Jump_State ** 2
+        if Mario.Jump_State < 5:
+            Mario.Jump_State += 1
+
+    if Mario.Y < 194:
+        Mario.Y = 194
+        Mario.Jump = Mario.Jump_None
+        Mario.Jump_State = 0
+        if Mario.Move == True:
+            Mario.State = 1
+        else:
+            Mario.State = 0
 
 
 def handle_events():

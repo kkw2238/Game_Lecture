@@ -33,8 +33,12 @@ class Mario:
 
     def draw(self):
         if self.Exit == False :
-            self.image_Mario.clip_draw(52 * self.State , 50 * self.Where , 52  , 50 , self.X ,self.Y)
-            self.image_Number.clip_draw(20 * (self.Num - 1) , 0 , 20 , 18 , self.X , self.Y + 34)
+            if self.Select == False :
+                self.image_Mario.clip_draw(0 , 50 * self.Where , 52, 50, self.X, self.Y)
+                self.image_Number.clip_draw(20 * (self.Num - 1), 0, 20, 18, self.X, self.Y + 34)
+            else :
+                self.image_Mario.clip_draw(52 * self.State , 50 * self.Where , 52  , 50 , self.X ,self.Y)
+                self.image_Number.clip_draw(20 * (self.Num - 1) , 0 , 20 , 18 , self.X , self.Y + 34)
 
     def update(self):
 
@@ -143,45 +147,128 @@ def KEYPAD(mario):
 
 def Block(MARIO , Marios):
     for mario in Marios:
-        if MARIO.Num != mario.Num :
-            if MARIO.X + 26 > mario.X - 26 and MARIO.X + 26 < mario.X + 26 :
-                if MARIO.Y == mario.Y :
+
+        if MARIO.Num != mario.Num:
+            if MARIO.X < mario.X + 26 and MARIO.X > mario.X - 26:
+
+                if MARIO.Y -26 <= mario.Y + 26 and MARIO.Y -26 >= mario.Y - 26 and MARIO.Jump == MARIO.Jump_Down:
+
+                    MARIO.Y = mario.Y + 52
+
+                    MARIO.Jump = MARIO.Jump_None
+
+                    MARIO.Jump_State = 0
+
+                    if MARIO.Move == True:
+                        MARIO.State = 1
+
+                    else:
+                        MARIO.State = 0
+
+                if MARIO.Y -26 <= mario.Y + 26 and MARIO.Y -26 >= mario.Y - 26 and MARIO.Jump == MARIO.Jump_Down:
+
+                    MARIO.Y = mario.Y + 52
+
+                    MARIO.Jump = MARIO.Jump_None
+
+                    MARIO.Jump_State = 0
+
+                    if MARIO.Move == True:
+
+                        MARIO.State = 1
+
+                    else:
+
+                        MARIO.State = 0
+
+            if MARIO.X + 26 > mario.X - 26 and MARIO.X + 26 < mario.X + 26:
+
+                if MARIO.Y == mario.Y:
+
                     MARIO.X = mario.X - 52
 
-                elif MARIO.Y - 25 < mario.Y + 25 and MARIO.Y -25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Down:
-                    MARIO.Y = mario.Y + 50
+
+
+                if MARIO.Y - 26 <= mario.Y + 26 and MARIO.Y - 26 >= mario.Y - 26 and MARIO.Jump == MARIO.Jump_Down:
+
+                    MARIO.Y = mario.Y + 52
+
                     MARIO.Jump = MARIO.Jump_None
+
                     MARIO.Jump_State = 0
-                    if MARIO.Move :
+
+                    if MARIO.Move:
+
                         MARIO.State = 1
+
                     else:
+
                         MARIO.State = 0
 
-                elif MARIO.Y + 25 < mario.Y + 25 and MARIO.Y + 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Up :
-                    MARIO.Y = mario.Y - 50
+
+                if MARIO.Y + 26 < mario.Y + 26 and MARIO.Y + 26 > mario.Y - 26 and MARIO.Jump == MARIO.Jump_Up:
+
+                    MARIO.Y = mario.Y - 52
+
                     MARIO.Jump = MARIO.Jump_Down
+
                     MARIO.Jump_State = 0
 
-            elif MARIO.X - 26 < mario.X + 26 and MARIO.X - 26 > mario.X - 26 :
+
+                if MARIO.Y + 26 < mario.Y + 26 and MARIO.Y + 26 > mario.Y - 26 and MARIO.Jump == MARIO.Jump_Up:
+
+                    MARIO.Y = mario.Y - 52
+
+                    MARIO.Jump = MARIO.Jump_Down
+
+                    if MARIO.Move == True:
+
+                        MARIO.State = 1
+
+                    else:
+
+                        MARIO.State = 0
+
+            if MARIO.X - 26 < mario.X + 26 and MARIO.X - 26 > mario.X - 26:
+
                 if MARIO.Y == mario.Y:
+
                     MARIO.X = mario.X + 52
 
-                elif MARIO.Y - 25 < mario.Y + 25 and MARIO.Y - 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Down:
-                    MARIO.Y = mario.Y + 50
+
+
+                if MARIO.Y - 26 <= mario.Y + 26 and MARIO.Y - 26 >= mario.Y - 26 and MARIO.Jump == MARIO.Jump_Down:
+
+                    MARIO.Y = mario.Y + 52
+
                     MARIO.Jump = MARIO.Jump_None
+
                     MARIO.Jump_State = 0
-                    if MARIO.Move == True :
+
+                    if MARIO.Move == True:
                         MARIO.State = 1
+
                     else:
                         MARIO.State = 0
 
-                elif MARIO.Y + 25 < mario.Y + 25 and MARIO.Y + 25 > mario.Y - 25 and MARIO.Jump == MARIO.Jump_Up :
-                    MARIO.Y = mario.Y - 50
+
+
+                if MARIO.Y + 26 < mario.Y + 26 and MARIO.Y + 26 > mario.Y - 26 and MARIO.Jump == MARIO.Jump_Up:
+
+                    MARIO.Y = mario.Y - 52
+
                     MARIO.Jump = MARIO.Jump_Down
-                    if MARIO.Move == True :
+
+                    if MARIO.Move == True:
+
                         MARIO.State = 1
+
                     else:
+
                         MARIO.State = 0
+
+
+
 
 def Create_Marios():
     Mario_Data_File = open("Mario_State.txt","r")
