@@ -15,7 +15,7 @@ Key_Dish    = None
 
 def JUMP(Mario):
     global Marios
-#
+
     down = 0
     Jerge_down = False
     if Mario.Y >= 244:
