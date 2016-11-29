@@ -94,7 +94,7 @@ def handle_events():
             for mario in Marios :
                 mario.Handle_Event(event)
 
-#
+
 def UPDATE():
     global Marios , Key , exits
 
