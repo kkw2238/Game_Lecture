@@ -61,7 +61,7 @@ def UPDATE():
         Stage1.Create_Stage()
 
 
-
+#
 def DRAW():
     global exits , press_start , back_ground , Marios , logo
     back_ground.draw()
