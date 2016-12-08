@@ -15,7 +15,6 @@ if platform.architecture()[0] == '32bit':
 else :
     os.environ["PYSDL2_DLL_PATH"] = "./SDL2/x64"
 
-#
 mario       = None
 Marios      = None
 press_start = None
