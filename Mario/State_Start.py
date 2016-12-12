@@ -21,7 +21,7 @@ press_start = None
 back_ground = None
 exits       = None
 logo        = None
-##
+
 class Press_Start:
     def __init__(self):
         self.Press_C = load_image('Press_C_Start.png')
