@@ -81,7 +81,7 @@ def DRAW():
         Mario.draw()
     logo.draw()
     update_canvas()
-
+#
 def JUMP(Mario):
     global Marios
 
