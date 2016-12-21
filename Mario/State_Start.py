@@ -1,19 +1,11 @@
 from pico2d import *
 
+import Collision
+import FrameWork
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
 import Stage1
-
-
-import platform
-import os
-
-if platform.architecture()[0] == '32bit':
-    os.environ["PYSDL2_DLL_PATH"] = "./SDL2/x86"
-
-else :
-    os.environ["PYSDL2_DLL_PATH"] = "./SDL2/x64"
 
 mario       = None
 Marios      = None
@@ -24,7 +16,7 @@ logo        = None
 
 class Press_Start:
     def __init__(self):
-        self.Press_C = load_image('Press_C_Start.png')
+        self.Press_C = load_image('./Resource/Press_C_Start.png')
         self.Print = False
         self.Count = 0
 
@@ -47,32 +39,41 @@ class Press_Start:
 
 class Logo:
     def __init__(self):
-        self.image_logo = load_image('Main_Rogo.png')
+        self.image_logo = load_image('./Resource/Main_Rogo.png')
 
     def draw(self):
         self.image_logo.draw(481,530)
 
+def ENTER():
 
-def UPDATE():
-    global press_start , Marios
+    global mario, Marios, press_start, back_ground, exits, logo, running
+
+    running = True
+    Marios = Class_Mario.Create_Marios()
+    exits = Class_Exit.Exit()
+    press_start = Press_Start()
+    back_ground = Class_Back_Ground.Back_Ground()
+    logo = Logo()
+    back_ground.Play_BGM()
+
+def UPDATE(frame_time):
+    global press_start , Marios , back_ground , exits
     Exit_Mario = 0
     press_start.update()
 
     for Mario in Marios :
-        JUMP(Mario)
-        Mario.update()
-        Class_Mario.Block(Mario, Marios)
+        Mario.update(frame_time,Marios)
         Mario.Key_Collision(exits)
         if Mario.Exit == True :
             Exit_Mario += 1
 
     if Exit_Mario == 6 :
-        exit()
-        Stage1.Create_Stage()
+        back_ground.Stop_BGM()
+        exits.Play_Clear_Sound()
+        delay(3)
+        FrameWork.push_state(Stage1)
 
-
-
-def DRAW():
+def DRAW(frame_time):
     global exits , press_start , back_ground , Marios , logo
     back_ground.draw()
     press_start.draw()
@@ -82,51 +83,7 @@ def DRAW():
     logo.draw()
     update_canvas()
 
-def JUMP(Mario):
-    global Marios
-
-    down = 0
-    Jerge_down = False
-    if Mario.Y >= 244:
-        for MARIO in Marios:
-            if (Mario.X < MARIO.X + 26 and Mario.X > MARIO.X - 26):
-                if Mario.Y - 26 > MARIO.Y + 26:
-                    down += 1
-                if Mario.Y + 26 <= MARIO.Y - 26:
-                    down += 1
-                else:
-                    Jerge_down = True
-
-            else:
-                down += 1
-
-        if (down, Mario.Jump) == (5, Mario.Jump_None):
-            Mario.Jump = Mario.Jump_Down
-            Mario.Jump_State = 1
-            Mario.State = 3
-
-    if Mario.Jump == Mario.Jump_Up:
-        if Mario.Jump_State == 0:
-            Mario.Jump = Mario.Jump_Down
-        Mario.Y = Mario.Y + Mario.Jump_State ** 2
-        Mario.Jump_State += 1
-
-    if Mario.Jump == Mario.Jump_Down:
-        Mario.Y = Mario.Y - Mario.Jump_State ** 2
-        if Mario.Jump_State < 5:
-            Mario.Jump_State += 1
-
-    if Mario.Y < 194:
-        Mario.Y = 194
-        Mario.Jump = Mario.Jump_None
-        Mario.Jump_State = 0
-        if Mario.Move == True:
-            Mario.State = 1
-        else:
-            Mario.State = 0
-
-
-def handle_events():
+def handle_events(frame_time):
     global running
     global Marios
     global Key
@@ -134,11 +91,14 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            running = False
+            FrameWork.quit()
 
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_c):
-            exit()
-            Stage1.Create_Stage()
+            Press_C = load_wav("./Music/Press_C_Sound.wav")
+            Press_C.play()
+            delay(1)
+            del(Press_C)
+            FrameWork.push_state(Stage1)
 
         else :
             for mario in Marios :
@@ -150,27 +110,3 @@ def exit():
     del(logo)
     del(exits)
 
-def main() :
-
-    open_canvas(962,700)
-
-
-    global mario , Marios , press_start , back_ground , exits , logo , running
-
-    running = True
-    Marios = Class_Mario.Create_Marios()
-    exits = Class_Exit.Exit()
-    press_start = Press_Start()
-    back_ground = Class_Back_Ground.Back_Ground()
-    logo = Logo()
-
-    while(running):
-        UPDATE()
-        DRAW()
-        handle_events()
-        delay(0.02)
-
-    close_canvas()
-
-if __name__ == '__main__':
-    main()

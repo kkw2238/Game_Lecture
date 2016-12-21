@@ -1,5 +1,7 @@
 from pico2d import *
 
+import Collision
+import FrameWork
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
@@ -12,50 +14,7 @@ exits       = None
 Key         = None
 Key_Dish    = None
 
-def JUMP(Mario):
-    global Marios
-
-    down = 0
-    Jerge_down = False
-    if Mario.Y >= 244:
-        for MARIO in Marios:
-            if (Mario.X < MARIO.X + 26 and Mario.X > MARIO.X - 26):
-                if Mario.Y - 26 > MARIO.Y + 26:
-                    down += 1
-                if Mario.Y + 26 <= MARIO.Y - 26:
-                    down += 1
-                else:
-                    Jerge_down = True
-
-            else:
-                down += 1
-
-        if (down, Mario.Jump) == (5, Mario.Jump_None):
-            Mario.Jump = Mario.Jump_Down
-            Mario.Jump_State = 1
-            Mario.State = 3
-
-    if Mario.Jump == Mario.Jump_Up:
-        if Mario.Jump_State == 0:
-            Mario.Jump = Mario.Jump_Down
-        Mario.Y = Mario.Y + Mario.Jump_State ** 2
-        Mario.Jump_State += 1
-
-    if Mario.Jump == Mario.Jump_Down:
-        Mario.Y = Mario.Y - Mario.Jump_State ** 2
-        if Mario.Jump_State < 5:
-            Mario.Jump_State += 1
-
-    if Mario.Y < 194:
-        Mario.Y = 194
-        Mario.Jump = Mario.Jump_None
-        Mario.Jump_State = 0
-        if Mario.Move == True:
-            Mario.State = 1
-        else:
-            Mario.State = 0
-
-def DRAW():
+def DRAW(frame_time):
     global exits , back_ground , Marios , Key , Key_Dish
     back_ground.draw()
     exits.draw()
@@ -68,13 +27,13 @@ def DRAW():
 
     update_canvas()
 
-def handle_events():
+def handle_events(frame_time):
     global running
     global Marios
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            running = False
+            FrameWork.quit()
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_m):
             for Mario in Marios:
                 if Mario.X <= Key.Key_X + 15 and Mario.X >= Key.Key_X - 15:
@@ -87,51 +46,33 @@ def handle_events():
                     Mario.Grab = False
 
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_v):
-            Create_Stage()
+            ENTER()
 
         else :
             for mario in Marios :
                 mario.Handle_Event(event)
 
 
-def UPDATE():
-    global Marios , Key , exits
-
-    for Mario in Marios :
-        if Mario.Select == True :
-            JUMP(Mario)
-
-    for Mario in Marios :
-        if Mario.Select == False :
-            JUMP(Mario)
-
-    EXIT_Mario = 0
-    for Mario in Marios :
-        if Mario.Select == True :
-            Mario.update()
-            Class_Mario.Block(Mario, Marios)
-            Mario.Key_Collision(exits)
-            if(Mario.Grab == True) :
-                Key.UPDATE(Mario)
-                exits.UPDATE(Key)
-
-            if Mario.Exit == True :
-                EXIT_Mario += 1
+def UPDATE(frame_time):
+    global Marios, Key, exits
+    Exit_Mario = 0
 
     for Mario in Marios:
-        if Mario.Select == False:
-            Mario.update()
-            Class_Mario.Block(Mario, Marios)
-            Mario.Key_Collision(exits)
-            if (Mario.Grab == True):
-                Key.UPDATE(Mario)
-                exits.UPDATE(Key)
+        Mario.update(frame_time, Marios)
+        Collision.Block(Mario, Marios)
+        Mario.Key_Collision(exits)
+        if Mario.Exit == True:
+            Exit_Mario += 1
 
-            if Mario.Exit == True:
-                EXIT_Mario += 1
+        if (Mario.Grab == True):
+            Key.UPDATE(Mario)
+            exits.UPDATE(Key)
 
-    if EXIT_Mario == 6 :
-        exit()
+    if Exit_Mario == 6:
+        back_ground.Stop_BGM()
+        exits.Play_Clear_Sound()
+        delay(3)
+
 
 def exit():
     global mario, Marios, back_ground, exits , Key , Key_Dish
@@ -142,7 +83,7 @@ def exit():
     del(Key_Dish)
     close_canvas()
 
-def Create_Stage():
+def ENTER():
     global mario, Marios, back_ground, exits , running , Key , Key_Dish
 
     Marios = Class_Mario.Create_Marios()
@@ -160,21 +101,4 @@ def Create_Stage():
     Key_Dish.Key_Dish_X = 481
     Key_Dish.Key_Dish_Y = 580
 
-    running = True
-
     exits.Open = False
-
-    Stage2()
-
-def Stage2() :
-    global running
-    while(running):
-        handle_events()
-        UPDATE()
-        DRAW()
-        delay(0.02)
-
-    close_canvas()
-
-if __name__ == '__Stage2__':
-    Stage2()

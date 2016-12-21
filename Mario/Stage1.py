@@ -1,5 +1,7 @@
 from pico2d import *
 
+import Collision
+import FrameWork
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
@@ -56,7 +58,7 @@ def JUMP(Mario):
         else :
             Mario.State = 0
 
-def DRAW():
+def DRAW(frame_time):
     global exits , back_ground , Marios , Key , Key_Dish
     back_ground.draw()
     exits.draw()
@@ -69,70 +71,52 @@ def DRAW():
 
     update_canvas()
 
-def handle_events():
+def handle_events(frame_time):
     global running
     global Marios
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            running = False
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_m):
+            FrameWork.quit()
+
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_x):
             for Mario in Marios:
                 if Mario.X <= Key.Key_X + 15 and Mario.X >= Key.Key_X - 15:
                     if Mario.Y <= Key.Key_Y + 15 and Mario.Y >= Key.Key_Y - 15:
                         Mario.Grab = True
 
-        elif (event.type, event.key) == (SDL_KEYUP, SDLK_m):
+        elif (event.type, event.key) == (SDL_KEYUP, SDLK_x):
             for Mario in Marios:
                 if Mario.Grab == True:
                     Mario.Grab = False
 
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_v):
-            Create_Stage()
+            ENTER()
 
         else :
             for mario in Marios :
                 mario.Handle_Event(event)
 
-#
-def UPDATE():
+def UPDATE(frame_time):
     global Marios , Key , exits
+    Exit_Mario = 0
 
     for Mario in Marios :
-        if Mario.Select == True :
-            Mario.update()
-            JUMP(Mario)
+        Mario.update(frame_time,Marios)
+        Collision.Block(Mario, Marios)
+        Mario.Key_Collision(exits)
+        if Mario.Exit == True :
+            Exit_Mario += 1
 
-    for Mario in Marios :
-        if Mario.Select == False :
-            Mario.update()
-            JUMP(Mario)
+        if (Mario.Grab == True):
+            Key.UPDATE(Mario)
+            exits.UPDATE(Key)
 
-    EXIT_Mario = 0
-    for Mario in Marios :
-        if Mario.Select == True :
-            Class_Mario.Block(Mario, Marios)
-            Mario.Key_Collision(exits)
-            if(Mario.Grab == True) :
-                Key.UPDATE(Mario)
-                exits.UPDATE(Key)
-
-            if Mario.Exit == True :
-                EXIT_Mario += 1
-
-    for Mario in Marios:
-        if Mario.Select == False:
-            Class_Mario.Block(Mario, Marios)
-            Mario.Key_Collision(exits)
-            if (Mario.Grab == True):
-                Key.UPDATE(Mario)
-                exits.UPDATE(Key)
-
-            if Mario.Exit == True:
-                EXIT_Mario += 1
-
-    if EXIT_Mario == 6 :
-        Stage2.Create_Stage()
+    if Exit_Mario == 6 :
+        back_ground.Stop_BGM()
+        exits.Play_Clear_Sound()
+        delay(3)
+        FrameWork.push_state(Stage2)
 
 def exit():
     global mario, Marios, back_ground, exits , Key , Key_Dish
@@ -144,7 +128,11 @@ def exit():
     close_canvas()
 
 
-def Create_Stage():
+def ENTER():
+
+    POSITION_KEY_X , POSITION_KEY_Y = 481 , 195
+    POSITION_EXIT_X , POSITION_EXIT_Y = 850 , 194
+
     global mario, Marios, back_ground, exits , running , Key , Key_Dish
 
     Marios = Class_Mario.Create_Marios()
@@ -154,29 +142,16 @@ def Create_Stage():
     Key = Class_Key.Key()
     Key_Dish = Class_Key.Key_Dish()
 
-    exits.X = 850
-    exits.Y = 194
+    exits.X = POSITION_EXIT_X
+    exits.Y = POSITION_EXIT_Y
 
-    Key.Key_X = 481
-    Key.Key_Y = 195
-    Key_Dish.Key_Dish_X = 481
-    Key_Dish.Key_Dish_Y = 175
+    Key.Key_X = POSITION_KEY_X
+    Key.Key_Y = POSITION_KEY_Y
+    Key_Dish.Key_Dish_X = POSITION_KEY_X
+    Key_Dish.Key_Dish_Y = POSITION_KEY_Y - 20
 
     running = True
 
     exits.Open = False
 
-    Stage1()
-
-def Stage1() :
-    global running
-    while(running):
-        handle_events()
-        UPDATE()
-        DRAW()
-        delay(0.02)
-
-    close_canvas()
-
-if __name__ == '__Stage1__':
-    Stage1()
+    back_ground.Play_BGM()

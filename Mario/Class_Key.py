@@ -7,7 +7,7 @@ class Key:
 
     def __init__(self):
         if Key.image_Key == None :
-            Key.image_Key = load_image('Key.png')
+            Key.image_Key = load_image('./Resource/Key.png')
 
         self.Key_X = 0
         self.Key_Y = 0
@@ -28,7 +28,7 @@ class Key_Dish:
 
     def __init__(self):
         if Key_Dish.image_Keydish == None:
-            Key_Dish.image_Keydish = load_image('Key_Dish.png')
+            Key_Dish.image_Keydish = load_image('./Resource/Key_Dish.png')
         self.Key_Dish_X = 0
         self.Key_Dish_Y = 0
 
