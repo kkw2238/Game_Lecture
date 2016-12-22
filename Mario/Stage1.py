@@ -110,7 +110,6 @@ def UPDATE(frame_time):
 
     for Mario in Marios :
         Mario.update(frame_time,Marios)
-
         Mario.Key_Collision(exits)
 
         if Mario.Exit == True :

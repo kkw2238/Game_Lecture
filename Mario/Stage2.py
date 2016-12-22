@@ -42,7 +42,7 @@ def handle_events(frame_time):
     for event in events:
         if event.type == SDL_QUIT:
             FrameWork.quit()
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_m):
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_x):
             for Mario in Marios:
                 if Mario.X <= Key.Key_X + 15 and Mario.X >= Key.Key_X - 15:
                     if Mario.Y <= Key.Key_Y + 15 and Mario.Y >= Key.Key_Y - 15:
@@ -67,7 +67,7 @@ def UPDATE(frame_time):
 
     for Mario in Marios:
         Mario.update(frame_time, Marios)
-
+        Mario.Key_Collision(exits)
         if Mario.Exit == True:
             Exit_Mario += 1
 
