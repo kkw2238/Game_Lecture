@@ -77,6 +77,31 @@ def Air_BLOCK(MARIO, Marios) :
                     MARIO.Jump = MARIO.Jump_Down
                     MARIO.Jump_State = 0
 
+def Void(mario , Marios) :
+    down = 0
+
+    for MARIO in Marios:
+        if MARIO.Num != mario.Num:
+            if (mario.X < RIGHT(MARIO) and mario.X > LEFT(MARIO)):
+                if DOWN(mario) > UP(MARIO):
+                    down += 1
+                if mario.Y < MARIO.Y:
+                    down += 1
+            else:
+                down += 1
+
+    print(down, mario.Jump, mario.Num)
+
+    if down == 5 and mario.Jump == mario.Jump_None :
+        if mario.Select == True:
+            mario.Jump = mario.Jump_Down
+            mario.Jump_State = 1
+            mario.State = 3
+
+        else :
+            mario.Jump = mario.Jump_Down
+            mario.Jump_State = 1
+
 def LEFT(MARIO) :
     return MARIO.X - 26
 

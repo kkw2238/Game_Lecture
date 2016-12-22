@@ -7,6 +7,7 @@ import Class_Back_Ground
 import Class_Exit
 import Class_Key
 import Stage2
+import time
 
 mario       = None
 Marios      = None
@@ -14,6 +15,10 @@ back_ground = None
 exits       = None
 Key         = None
 Key_Dish    = None
+MAX_Timer   = 300
+Start_Time  = 0
+Pass_Time   = 0
+Font        = None
 
 def JUMP(Mario):
     global Marios
@@ -69,6 +74,8 @@ def DRAW(frame_time):
     Key.draw()
     Key_Dish.draw()
 
+    TIME()
+
     update_canvas()
 
 def handle_events(frame_time):
@@ -103,8 +110,9 @@ def UPDATE(frame_time):
 
     for Mario in Marios :
         Mario.update(frame_time,Marios)
-        Collision.Block(Mario, Marios)
+
         Mario.Key_Collision(exits)
+
         if Mario.Exit == True :
             Exit_Mario += 1
 
@@ -127,13 +135,20 @@ def exit():
     del(Key_Dish)
     close_canvas()
 
+def Game_Over():
+    Game_Over = load_image('./Resource/GameOver.png')
+    Game_Over.clip_draw(0, 0, 962, 530, 481, 265)
+    Font.draw(300, 265, 'Game Over', (255, 255, 255))
+    Game_Over_Sound = load_music('./Music/Game_Over_Sound.mp3')
+    Game_Over_Sound.play(1)
+    delay(7)
+    FrameWork.push_state(State_Start)
 
 def ENTER():
+    global mario, Marios, back_ground, exits, running, Key, Key_Dish , Start_Time , Pass_Time , Font
 
     POSITION_KEY_X , POSITION_KEY_Y = 481 , 195
     POSITION_EXIT_X , POSITION_EXIT_Y = 850 , 194
-
-    global mario, Marios, back_ground, exits , running , Key , Key_Dish
 
     Marios = Class_Mario.Create_Marios()
     exits = Class_Exit.Exit()
@@ -155,3 +170,23 @@ def ENTER():
     exits.Open = False
 
     back_ground.Play_BGM()
+
+    Start_Time = time.clock()
+    Pass_Time = Start_Time
+
+    if Font == None :
+        Font = load_font('ENCR10B.TTF',30)
+
+def TIME() :
+    global MAX_Timer , Font , Start_Time , Pass_Time
+    Pass_Time = time.clock() - Start_Time
+    MAX_Timer = 300
+    MAX_Timer -= Pass_Time
+    Minute = MAX_Timer // 60
+    Second = (MAX_Timer - 60 * Minute)
+
+    if MAX_Timer > 0 :
+        Font.draw(350, 650, ('Time : 0%d : %d' % (Minute, Second)), (0, 0, 0))
+
+    else :
+        Game_Over()

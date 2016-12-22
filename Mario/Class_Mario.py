@@ -21,15 +21,21 @@ class Mario:
     Right, Left = 0, 1
 
     Jump_Sound = None
+    Exit_Sound = None
 
     def __init__(self):
         if Mario.image_Mario == None :
             Mario.image_Mario = load_image('./Resource/Mario_Null.png')
+
         if Mario.image_Number == None :
             Mario.image_Number = load_image('./Resource/Number_40.png')
+
         if Mario.Jump_Sound == None :
             Mario.Jump_Sound = load_wav('./Music/Jump.wav')
             Mario.Jump_Sound.set_volume(30)
+
+        if Mario.Exit_Sound == None :
+            Mario.Exit_Sound = load_wav("./Music/Mario_Exit_Sound.wav")
 
         self.Num = 0
         self.X = 0
@@ -48,18 +54,25 @@ class Mario:
     def Play_Jump_Sound(self):
         Mario.Jump_Sound.play(1)
 
+    def Play_Exit_Sound(self):
+        Mario.Exit_Sound.play(1)
+
     def draw(self):
         self.image_Mario.clip_draw(52 * self.State , 50 * self.Where , 52  , 50 , self.X ,self.Y)
         self.image_Number.clip_draw(20 * (self.Num - 1) , 0 , 20 , 18 , self.X , self.Y + 34)
 
     def update(self,frame_time,marios):
 
+        if self.Y >= 244 :
+            Collision.Void(self,marios)
+
+        self.JUMP(marios, frame_time)
+
+        Collision.Air_BLOCK(self, marios)
+
         if self.Select :
 
             distance = self.Move_State * Mario.RUN_SPEED_PPS * frame_time
-
-            self.JUMP(marios, frame_time)
-            Collision.Air_BLOCK(self, marios)
 
             if (self.Move , self.Jump) == (True , self.Jump_None) :
 
@@ -75,7 +88,6 @@ class Mario:
                 self.X = min(938, self.X)
 
                 Collision.Block(self, marios)
-
 
             if self.Jump != self.Jump_None :
                 self.State = 3
@@ -136,7 +148,7 @@ class Mario:
                         self.State = 0
                     self.Move = False
 
-            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_UP):
+            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_c):
                 if self.Select:
                     if self.Jump == 0:
                         self.Jump = self.Jump_Up
@@ -151,34 +163,20 @@ class Mario:
             if self.X <= Exit.X + 24 and self.X >= Exit.X - 24:
 
                 if self.Y <= Exit.Y + 24 and self.Y >= Exit.Y - 24:
+
                     self.Exit = True
 
                     self.Select = False
 
                     self.X = 10000
 
+                    self.Play_Exit_Sound()
+
     def JUMP(self,Marios,frame_time):
         down = 0
         distance = Mario.RUN_SPEED_PPS * frame_time
         Size_X, Size_Y = 52, 50
         Half_X, Half_Y = Size_X / 2 , Size_Y / 2
-        if self.Y >= 244:
-            for MARIO in Marios:
-                if MARIO.Num != self.Num :
-                    if (self.X < MARIO.X + Half_X and self.X > MARIO.X - Half_X):
-                        if self.Y > MARIO.Y + Size_Y:
-                            down += 1
-                        if self.Y < MARIO.Y :
-                            down += 1
-                    else:
-                        down += 1
-
-            print(down, self.Jump ,self.Num)
-
-            if down == 5 and self.Jump == self.Jump_None:
-                self.Jump = self.Jump_Down
-                self.Jump_State = 1
-                self.State = 3
 
         if self.Jump == self.Jump_Up:
             if self.Jump_State == 0:

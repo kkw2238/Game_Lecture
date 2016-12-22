@@ -3,7 +3,7 @@ from pico2d import *
 import Collision
 import time
 import FrameWork
-import Stage3
+import State_Start
 import Class_Mario
 import Class_Back_Ground
 import Class_Exit
@@ -67,6 +67,7 @@ def UPDATE(frame_time):
 
     for Mario in Marios:
         Mario.update(frame_time, Marios)
+        Mario.Key_Collision(exits)
 
         if Mario.Exit == True:
             Exit_Mario += 1
@@ -79,7 +80,7 @@ def UPDATE(frame_time):
         back_ground.Stop_BGM()
         exits.Play_Clear_Sound()
         delay(3)
-        FrameWork.push_state(Stage3)
+        FrameWork.push_state(State_Start)
 
 def Game_Over():
     Game_Over = load_image('./Resource/GameOver.png')
@@ -99,6 +100,7 @@ def exit():
     del(Key_Dish)
     close_canvas()
 
+
 def ENTER():
     global mario, Marios, back_ground, exits , running , Key , Key_Dish , Start_Time , Pass_Time , Font
 
@@ -113,12 +115,13 @@ def ENTER():
     exits.Y = 194
 
     Key.Key_X = 481
-    Key.Key_Y = 500
+    Key.Key_Y = 650
     Key_Dish.Key_Dish_X = Key.Key_X
     Key_Dish.Key_Dish_Y = Key.Key_Y - 20
 
     exits.Open = False
     back_ground.Play_BGM()
+
 
     Start_Time = time.clock()
     Pass_Time = Start_Time
@@ -139,3 +142,4 @@ def TIME() :
 
     else :
         Game_Over()
+
