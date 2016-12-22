@@ -77,7 +77,7 @@ def quit():
 def run(start_state):
     global running, stack
     running = True
-    open_canvas(962, 700)
+    open_canvas(962, 700 ,sync = True)
     stack = [start_state]
     start_state.ENTER()
     current_time = time.clock()
